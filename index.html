@@ -245,7 +245,6 @@
         <video
           id="mickeyTapVideo"
           src="mickey-tapping.mp4"
-          autoplay
           playsinline
           muted
         ></video>
@@ -474,6 +473,11 @@
           envelopeScreen.classList.add("screen--hidden");
           mickeyTapScreen.classList.remove("screen--hidden");
           mickeyTapScreen.classList.add("screen--active");
+
+          if (mickeyTapVideo) {
+            mickeyTapVideo.currentTime = 0;
+            mickeyTapVideo.play().catch(() => {});
+          }
         }, 5000); // pause length in ms (longer so they can read their name)
       });
     }
