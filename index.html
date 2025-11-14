@@ -597,6 +597,14 @@
       });
     }
 
+    // Handle Mickey out window video ending (final video in sequence)
+    if (mickeyOutVideo) {
+      mickeyOutVideo.addEventListener("ended", () => {
+        // This is the end of the video sequence
+        // The screen just stays on the last frame
+      });
+    }
+
     const fullscreenBtn = document.getElementById("fullscreenBtn");
     const stageElement = document.querySelector(".stage");
 
