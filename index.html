@@ -281,7 +281,9 @@
     const mickeyTapVideo = document.getElementById("mickeyTapVideo");
     let sparklesEnabled = false;
     let magicCharged = false;
-    let magicChargeTimer = null;
+    let magicChargeProgress = 0;
+    let lastMagicEventTime = null;
+    const REQUIRED_MAGIC_MS = 5000;
 
     const envelopeMagicScreen = document.getElementById("screen-envelope-magic");
     const envelopeMagicVideo = document.getElementById("envelopeMagicVideo");
@@ -469,9 +471,11 @@
         envelopeScreen.classList.remove("screen--hidden");
         envelopeScreen.classList.add("screen--active");
 
-        // Enable sparkles and start a 5s "charging" period
+        // Enable sparkles and reset magic charge progress
         sparklesEnabled = true;
         magicCharged = false;
+        magicChargeProgress = 0;
+        lastMagicEventTime = null;
 
         const envelopeImgEl = document.querySelector(".envelope-img");
         if (envelopeImgEl) {
@@ -479,11 +483,6 @@
           void envelopeImgEl.offsetWidth;
           envelopeImgEl.classList.add("envelope-glow");
         }
-
-        if (magicChargeTimer) clearTimeout(magicChargeTimer);
-        magicChargeTimer = setTimeout(() => {
-          magicCharged = true;
-        }, 5000); // require ~5 seconds of magic time
       });
     }
 
@@ -508,10 +507,8 @@
         // Disable ongoing trail sparkles as we transition
         sparklesEnabled = false;
         magicCharged = false;
-        if (magicChargeTimer) {
-          clearTimeout(magicChargeTimer);
-          magicChargeTimer = null;
-        }
+        magicChargeProgress = 0;
+        lastMagicEventTime = null;
 
         const envelopeImgEl2 = document.querySelector(".envelope-img");
         if (envelopeImgEl2) {
@@ -553,6 +550,19 @@
       const x = e.clientX - stageRect.left;
       const y = e.clientY - stageRect.top;
       MagicSparkles.burst(x, y, 10);
+
+      // Accumulate magic charge based on active movement over the envelope
+      const now = performance.now();
+      if (lastMagicEventTime === null) {
+        lastMagicEventTime = now;
+      }
+      const delta = now - lastMagicEventTime;
+      lastMagicEventTime = now;
+
+      magicChargeProgress += delta;
+      if (magicChargeProgress >= REQUIRED_MAGIC_MS) {
+        magicCharged = true;
+      }
     });
     if (envelopeMagicVideo && envelopeMagicScreen && mickeyOutScreen) {
       envelopeMagicVideo.addEventListener("ended", () => {
