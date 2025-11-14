@@ -209,6 +209,26 @@
         ></video>
       </div>
 
+      <!-- Envelope magic screen -->
+      <div id="screen-envelope-magic" class="screen screen--hidden">
+        <video
+          id="envelopeMagicVideo"
+          src="envelope-magic.mp4"
+          playsinline
+          muted
+        ></video>
+      </div>
+
+      <!-- Mickey out window screen -->
+      <div id="screen-mickey-outwindow" class="screen screen--hidden">
+        <video
+          id="mickeyOutVideo"
+          src="mickey-outwindow.mp4"
+          playsinline
+          muted
+        ></video>
+      </div>
+
     </div>
   </div>
 
@@ -237,6 +257,11 @@
     const mickeyTapScreen = document.getElementById("screen-mickey-tap");
     const mickeyTapVideo = document.getElementById("mickeyTapVideo");
     let sparklesEnabled = false;
+
+    const envelopeMagicScreen = document.getElementById("screen-envelope-magic");
+    const envelopeMagicVideo = document.getElementById("envelopeMagicVideo");
+    const mickeyOutScreen = document.getElementById("screen-mickey-outwindow");
+    const mickeyOutVideo = document.getElementById("mickeyOutVideo");
 
     // === MAGIC SPARKLES ENGINE ===
     const MagicSparkles = (() => {
@@ -424,6 +449,40 @@
       });
     }
 
+    // When the user taps/clicks the envelope after magic is enabled,
+    // trigger a big explosive burst and transition to the envelope-magic video.
+    const envelopeImg = document.querySelector(".envelope-img");
+    if (envelopeImg && envelopeScreen && envelopeMagicScreen && envelopeMagicVideo) {
+      envelopeImg.addEventListener("pointerdown", (e) => {
+        if (!sparklesEnabled) return;
+
+        const stage = document.querySelector(".stage");
+        if (!stage) return;
+        const stageRect = stage.getBoundingClientRect();
+        const x = e.clientX - stageRect.left;
+        const y = e.clientY - stageRect.top;
+
+        // Extra-explosive magic burst at the touch point
+        MagicSparkles.burst(x, y, 80);
+        setTimeout(() => MagicSparkles.burst(x, y, 80), 80);
+        setTimeout(() => MagicSparkles.burst(x, y, 60), 160);
+
+        // Disable ongoing trail sparkles as we transition
+        sparklesEnabled = false;
+
+        // Short delay to let the explosion show, then switch scenes
+        setTimeout(() => {
+          envelopeScreen.classList.remove("screen--active");
+          envelopeScreen.classList.add("screen--hidden");
+          envelopeMagicScreen.classList.remove("screen--hidden");
+          envelopeMagicScreen.classList.add("screen--active");
+
+          envelopeMagicVideo.currentTime = 0;
+          envelopeMagicVideo.play().catch(() => {});
+        }, 200);
+      });
+    }
+
     document.addEventListener("pointermove", (e) => {
       if (!sparklesEnabled) return;
 
@@ -450,3 +509,17 @@
   </script>
 </body>
 </html>
+    if (envelopeMagicVideo && envelopeMagicScreen && mickeyOutScreen) {
+      envelopeMagicVideo.addEventListener("ended", () => {
+        // Envelope magic → Mickey out window
+        envelopeMagicScreen.classList.remove("screen--active");
+        envelopeMagicScreen.classList.add("screen--hidden");
+        mickeyOutScreen.classList.remove("screen--hidden");
+        mickeyOutScreen.classList.add("screen--active");
+
+        if (mickeyOutVideo) {
+          mickeyOutVideo.currentTime = 0;
+          mickeyOutVideo.play().catch(() => {});
+        }
+      });
+    }
