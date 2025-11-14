@@ -182,6 +182,17 @@
           class="envelope-img"
         />
         <div class="envelope-text" id="envelopeToText"></div>
+      </div> <!-- end of #screen-envelope -->
+
+      <!-- Mickey tapping screen -->
+      <div id="screen-mickey-tap" class="screen screen--hidden">
+        <video
+          id="mickeyTapVideo"
+          src="mickey-tapping.mp4"
+          autoplay
+          playsinline
+          muted
+        ></video>
       </div>
 
     </div>
@@ -209,13 +220,29 @@
 
     const introScreen = document.getElementById("screen-intro");
     const envelopeScreen = document.getElementById("screen-envelope");
+    const mickeyTapScreen = document.getElementById("screen-mickey-tap");
+    const mickeyTapVideo = document.getElementById("mickeyTapVideo");
 
-    if (video && introScreen && envelopeScreen) {
+    if (video && introScreen && envelopeScreen && mickeyTapScreen) {
       video.addEventListener("ended", () => {
+        // Intro → Envelope
         introScreen.classList.remove("screen--active");
         introScreen.classList.add("screen--hidden");
         envelopeScreen.classList.remove("screen--hidden");
         envelopeScreen.classList.add("screen--active");
+
+        // After a pause, Envelope → Mickey tapping
+        setTimeout(() => {
+          envelopeScreen.classList.remove("screen--active");
+          envelopeScreen.classList.add("screen--hidden");
+          mickeyTapScreen.classList.remove("screen--hidden");
+          mickeyTapScreen.classList.add("screen--active");
+
+          if (mickeyTapVideo) {
+            mickeyTapVideo.currentTime = 0;
+            mickeyTapVideo.play().catch(() => {});
+          }
+        }, 1500); // pause length in ms
       });
     }
   </script>
