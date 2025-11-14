@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Magical Surprise</title>
+
+  <!-- Mobile / iOS optimization -->
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <style>
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: #000;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+    }
+
+    #app {
+      position: fixed;
+      inset: 0;
+      padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+
+    .stage {
+      position: relative;
+      background: #000;
+      overflow: hidden;
+      border-radius: 16px;
+      max-height: 100%;
+      max-width: 100%;
+    }
+
+    @supports (aspect-ratio: 9 / 16) {
+      .stage {
+        aspect-ratio: 9 / 16;
+        height: 100vh;
+      }
+    }
+
+    @supports not (aspect-ratio: 9 / 16) {
+      .stage {
+        width: 56.25vh;
+        height: 100vh;
+      }
+    }
+
+    video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .child-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 12px rgba(0,0,0,0.8);
+      margin-bottom: 4px;
+    }
+
+    .small-text {
+      font-size: 0.9rem;
+      color: #f5f5f5;
+      text-shadow: 0 0 8px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="stage">
+
+      <!-- ⭐ Your first clip: mickey-intro.mp4 -->
+      <video id="revealVideo"
+             src="mickey-intro.mp4"
+             autoplay
+             playsinline
+             muted>
+      </video>
+
+      <div class="overlay">
+        <div class="child-name" id="childName"></div>
+        <div class="small-text" id="bottomLine"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Read ?name= and ?line=
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name") || "";
+    const line = params.get("line") || "";
+
+    if (name) document.getElementById("childName").textContent = name;
+    if (line) document.getElementById("bottomLine").textContent = line;
+
+    // iOS autoplay helper
+    const video = document.getElementById("revealVideo");
+    document.addEventListener("touchstart", () => {
+      if (video.paused) video.play().catch(() => {});
+    }, { passive: true });
+  </script>
+</body>
+</html>
