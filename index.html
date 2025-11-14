@@ -66,6 +66,54 @@
       }
     }
 
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screen--hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .screen--active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .desk-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .envelope-img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      height: auto;
+    }
+
+    .envelope-text {
+      position: absolute;
+      left: 17.65%;   /* 190.6px / 1080px */
+      top: 30.23%;    /* 580.4px / 1920px */
+      transform: translate(0, 0);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #3b2b1a;
+      text-align: center;
+      text-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
+      pointer-events: none;
+    }
+
     video {
       position: absolute;
       inset: 0;
@@ -106,30 +154,52 @@
   <div id="app">
     <div class="stage">
 
-      <!-- ⭐ Your first clip: mickey-intro.mp4 -->
-      <video id="revealVideo"
-             src="mickey-intro.mp4"
-             autoplay
-             playsinline
-             muted>
-      </video>
+      <!-- Intro screen: Mickey talking -->
+      <div id="screen-intro" class="screen screen--active">
+        <video id="revealVideo"
+               src="mickey-intro.mp4"
+               autoplay
+               playsinline
+               muted>
+        </video>
 
-      <div class="overlay">
-        <div class="child-name" id="childName"></div>
-        <div class="small-text" id="bottomLine"></div>
+        <div class="overlay">
+          <div class="child-name" id="childName"></div>
+          <div class="small-text" id="bottomLine"></div>
+        </div>
+      </div>
+
+      <!-- Envelope screen: desk background + envelope + "To NAME" -->
+      <div id="screen-envelope" class="screen screen--hidden">
+        <img
+          src="desk-background.png"
+          alt="Magical desk background"
+          class="desk-bg"
+        />
+        <img
+          src="envelope.png"
+          alt="Envelope"
+          class="envelope-img"
+        />
+        <div class="envelope-text" id="envelopeToText"></div>
       </div>
 
     </div>
   </div>
 
   <script>
-    // Read ?name= and ?line=
+    // Read ?name=, ?line= and ?to=
     const params = new URLSearchParams(window.location.search);
     const name = params.get("name") || "";
     const line = params.get("line") || "";
+    const toName = params.get("to") || name || "";
 
     if (name) document.getElementById("childName").textContent = name;
     if (line) document.getElementById("bottomLine").textContent = line;
+    if (toName) {
+      const envelopeTextEl = document.getElementById("envelopeToText");
+      if (envelopeTextEl) envelopeTextEl.textContent = "To " + toName;
+    }
 
     // iOS autoplay helper
     const video = document.getElementById("revealVideo");
@@ -137,22 +207,16 @@
       if (video.paused) video.play().catch(() => {});
     }, { passive: true });
 
-    document.addEventListener("DOMContentLoaded", () => {
-      MagicSparkles.init("#sparkleCanvas", {
-        maxParticles: 140,
-        hueMin: 40,
-        hueMax: 55
-      });
-    });
+    const introScreen = document.getElementById("screen-intro");
+    const envelopeScreen = document.getElementById("screen-envelope");
 
-    // Call this later when you *do* want a big magic burst
-    function triggerMagicBurst() {
-      const stage = document.querySelector(".stage");
-      if (!stage) return;
-      const rect = stage.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height * 0.75;
-      MagicSparkles.burst(x, y, 40); // increase count for bigger effect
+    if (video && introScreen && envelopeScreen) {
+      video.addEventListener("ended", () => {
+        introScreen.classList.remove("screen--active");
+        introScreen.classList.add("screen--hidden");
+        envelopeScreen.classList.remove("screen--hidden");
+        envelopeScreen.classList.add("screen--active");
+      });
     }
   </script>
 </body>
