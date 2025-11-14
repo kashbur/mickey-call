@@ -136,6 +136,24 @@
     document.addEventListener("touchstart", () => {
       if (video.paused) video.play().catch(() => {});
     }, { passive: true });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      MagicSparkles.init("#sparkleCanvas", {
+        maxParticles: 140,
+        hueMin: 40,
+        hueMax: 55
+      });
+    });
+
+    // Call this later when you *do* want a big magic burst
+    function triggerMagicBurst() {
+      const stage = document.querySelector(".stage");
+      if (!stage) return;
+      const rect = stage.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height * 0.75;
+      MagicSparkles.burst(x, y, 40); // increase count for bigger effect
+    }
   </script>
 </body>
 </html>
