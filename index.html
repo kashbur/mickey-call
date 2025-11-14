@@ -204,7 +204,6 @@
         <video
           id="mickeyTapVideo"
           src="mickey-tapping.mp4"
-          autoplay
           playsinline
           muted
         ></video>
@@ -247,11 +246,11 @@
       let running = false;
 
       const defaults = {
-        maxParticles: 150,
+        maxParticles: 300,
         hueMin: 40,  // gold-range
         hueMax: 55,
-        sizeMin: 2,
-        sizeMax: 6,
+        sizeMin: 2.5,
+        sizeMax: 7,
         decayMin: 0.015,
         decayMax: 0.03
       };
@@ -384,25 +383,11 @@
     // Initialize sparkles engine on DOM ready
     document.addEventListener("DOMContentLoaded", () => {
       MagicSparkles.init("#sparkleCanvas", {
-        maxParticles: 140,
+        maxParticles: 300,
         hueMin: 40,
         hueMax: 55
       });
     });
-
-    // Helper to trigger sparkles on the envelope scene
-    function triggerEnvelopeSparkles() {
-      const stage = document.querySelector(".stage");
-      if (!stage) return;
-      const rect = stage.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height * 0.7;
-      // big burst
-      MagicSparkles.burst(x, y, 40);
-      // a bit of trailing magic
-      setTimeout(() => MagicSparkles.burst(x, y, 25), 250);
-      setTimeout(() => MagicSparkles.burst(x, y, 20), 500);
-    }
 
     if (video && introScreen && envelopeScreen && mickeyTapScreen) {
       video.addEventListener("ended", () => {
@@ -420,7 +405,6 @@
           mickeyTapScreen.classList.add("screen--active");
 
           if (mickeyTapVideo) {
-            mickeyTapVideo.currentTime = 0;
             mickeyTapVideo.play().catch(() => {});
           }
         }, 1500); // pause length in ms
@@ -429,26 +413,39 @@
 
     if (mickeyTapVideo && envelopeScreen && mickeyTapScreen) {
       mickeyTapVideo.addEventListener("ended", () => {
-        // Mickey tapping → back to envelope with sparkles
+        // Mickey tapping → back to envelope; enable interactive sparkles
         mickeyTapScreen.classList.remove("screen--active");
         mickeyTapScreen.classList.add("screen--hidden");
         envelopeScreen.classList.remove("screen--hidden");
         envelopeScreen.classList.add("screen--active");
 
-        // Trigger magical sparkles now that we're back on the desk
-        triggerEnvelopeSparkles();
+        // Only allow sparkles after this step; no automatic burst
         sparklesEnabled = true;
       });
     }
 
     document.addEventListener("pointermove", (e) => {
       if (!sparklesEnabled) return;
+
       const stage = document.querySelector(".stage");
-      if (!stage) return;
-      const rect = stage.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      MagicSparkles.burst(x, y, 5);
+      const envelopeImg = document.querySelector(".envelope-img");
+      if (!stage || !envelopeImg) return;
+
+      const stageRect = stage.getBoundingClientRect();
+      const envelopeRect = envelopeImg.getBoundingClientRect();
+
+      // Only sparkle when pointer is over the envelope area
+      const overEnvelope =
+        e.clientX >= envelopeRect.left &&
+        e.clientX <= envelopeRect.right &&
+        e.clientY >= envelopeRect.top &&
+        e.clientY <= envelopeRect.bottom;
+
+      if (!overEnvelope) return;
+
+      const x = e.clientX - stageRect.left;
+      const y = e.clientY - stageRect.top;
+      MagicSparkles.burst(x, y, 10);
     });
   </script>
 </body>
