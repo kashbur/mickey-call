@@ -52,6 +52,21 @@
       max-width: 100%;
     }
 
+    #fullscreenBtn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 5;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+    }
+
     #sparkleCanvas {
       position: absolute;
       inset: 0;
@@ -84,6 +99,7 @@
       align-items: center;
       justify-content: center;
       z-index: 1;
+      transition: opacity 400ms ease-in-out;
     }
 
     .screen--hidden {
@@ -188,6 +204,8 @@
 <body>
   <div id="app">
     <div class="stage">
+
+      <button id="fullscreenBtn">⤢ Full Screen</button>
 
       <!-- Sparkle canvas overlay -->
       <canvas id="sparkleCanvas"></canvas>
@@ -459,7 +477,7 @@
           if (mickeyTapVideo) {
             mickeyTapVideo.play().catch(() => {});
           }
-        }, 1500); // pause length in ms
+        }, 3000); // pause length in ms (longer so they can read their name)
       });
     }
 
@@ -575,6 +593,23 @@
         if (mickeyOutVideo) {
           mickeyOutVideo.currentTime = 0;
           mickeyOutVideo.play().catch(() => {});
+        }
+      });
+    }
+
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const stageElement = document.querySelector(".stage");
+
+    if (fullscreenBtn && stageElement) {
+      fullscreenBtn.addEventListener("click", () => {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        } else {
+          if (stageElement.requestFullscreen) {
+            stageElement.requestFullscreen().catch(() => {});
+          } else if (stageElement.webkitRequestFullscreen) {
+            stageElement.webkitRequestFullscreen();
+          }
         }
       });
     }
