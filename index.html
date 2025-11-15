@@ -114,7 +114,7 @@
       object-fit: cover;
     }
 
-    .envelope-img {
+    .envelope-wrapper {
       position: absolute;
       left: 50%;
       top: 50%;
@@ -123,26 +123,42 @@
       height: auto;
     }
 
-    .envelope-glow {
+    .envelope-img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .envelope-glow-ring {
+      position: absolute;
+      inset: -10%;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 223, 150, 0.85) 0%,
+        rgba(255, 223, 150, 0.35) 40%,
+        rgba(255, 223, 150, 0.0) 75%
+      );
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .envelope-glow .envelope-glow-ring {
       animation: envelopeGlow 5s ease-out forwards;
     }
 
     @keyframes envelopeGlow {
       0% {
-        filter: drop-shadow(0 0 0px rgba(255, 223, 150, 0));
-        -webkit-filter: drop-shadow(0 0 0px rgba(255, 223, 150, 0));
+        opacity: 0;
+        transform: scale(0.9);
       }
-      40% {
-        filter: drop-shadow(0 0 10px rgba(255, 223, 150, 0.6));
-        -webkit-filter: drop-shadow(0 0 10px rgba(255, 223, 150, 0.6));
-      }
-      70% {
-        filter: drop-shadow(0 0 18px rgba(255, 235, 180, 0.9));
-        -webkit-filter: drop-shadow(0 0 18px rgba(255, 235, 180, 0.9));
+      50% {
+        opacity: 0.9;
+        transform: scale(1.02);
       }
       100% {
-        filter: drop-shadow(0 0 26px rgba(255, 245, 210, 1));
-        -webkit-filter: drop-shadow(0 0 26px rgba(255, 245, 210, 1));
+        opacity: 1;
+        transform: scale(1.05);
       }
     }
 
@@ -225,11 +241,14 @@
           alt="Magical desk background"
           class="desk-bg"
         />
-        <img
-          src="envelope.png"
-          alt="Envelope"
-          class="envelope-img"
-        />
+        <div class="envelope-wrapper">
+          <div class="envelope-glow-ring"></div>
+          <img
+            src="envelope.png"
+            alt="Envelope"
+            class="envelope-img"
+          />
+        </div>
         <div class="envelope-text" id="envelopeToText"></div>
       </div> <!-- end of #screen-envelope -->
 
@@ -513,11 +532,11 @@
         magicChargeProgress = 0;
         lastMagicEventTime = null;
 
-        const envelopeImgEl = document.querySelector(".envelope-img");
-        if (envelopeImgEl) {
-          envelopeImgEl.classList.remove("envelope-glow"); // reset if replayed
-          void envelopeImgEl.offsetWidth;
-          envelopeImgEl.classList.add("envelope-glow");
+        const envelopeWrapperEl = document.querySelector(".envelope-wrapper");
+        if (envelopeWrapperEl) {
+          envelopeWrapperEl.classList.remove("envelope-glow"); // reset if replayed
+          void envelopeWrapperEl.offsetWidth;
+          envelopeWrapperEl.classList.add("envelope-glow");
         }
       });
     }
@@ -546,9 +565,9 @@
         magicChargeProgress = 0;
         lastMagicEventTime = null;
 
-        const envelopeImgEl2 = document.querySelector(".envelope-img");
-        if (envelopeImgEl2) {
-          envelopeImgEl2.classList.remove("envelope-glow");
+        const envelopeWrapperEl2 = document.querySelector(".envelope-wrapper");
+        if (envelopeWrapperEl2) {
+          envelopeWrapperEl2.classList.remove("envelope-glow");
         }
 
         // Short delay to let the explosion show, then switch scenes
