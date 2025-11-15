@@ -270,6 +270,26 @@
         ></video>
       </div>
 
+      <!-- Flying houses screen -->
+      <div id="screen-flying-houses" class="screen screen--hidden">
+        <video
+          id="flyingHousesVideo"
+          src="flying-houses.mp4"
+          playsinline
+          muted
+        ></video>
+      </div>
+
+      <!-- Flying clouds screen -->
+      <div id="screen-flying-clouds" class="screen screen--hidden">
+        <video
+          id="flyingCloudsVideo"
+          src="flying-clouds.mp4"
+          playsinline
+          muted
+        ></video>
+      </div>
+
     </div>
   </div>
 
@@ -307,6 +327,10 @@
     const envelopeMagicVideo = document.getElementById("envelopeMagicVideo");
     const mickeyOutScreen = document.getElementById("screen-mickey-outwindow");
     const mickeyOutVideo = document.getElementById("mickeyOutVideo");
+    const flyingHousesScreen = document.getElementById("screen-flying-houses");
+    const flyingHousesVideo = document.getElementById("flyingHousesVideo");
+    const flyingCloudsScreen = document.getElementById("screen-flying-clouds");
+    const flyingCloudsVideo = document.getElementById("flyingCloudsVideo");
 
     // === MAGIC SPARKLES ENGINE ===
     const MagicSparkles = (() => {
@@ -594,6 +618,36 @@
         if (mickeyOutVideo) {
           mickeyOutVideo.currentTime = 0;
           mickeyOutVideo.play().catch(() => {});
+        }
+      });
+    }
+
+    // Mickey out window → Flying houses
+    if (mickeyOutVideo && mickeyOutScreen && flyingHousesScreen) {
+      mickeyOutVideo.addEventListener("ended", () => {
+        mickeyOutScreen.classList.remove("screen--active");
+        mickeyOutScreen.classList.add("screen--hidden");
+        flyingHousesScreen.classList.remove("screen--hidden");
+        flyingHousesScreen.classList.add("screen--active");
+
+        if (flyingHousesVideo) {
+          flyingHousesVideo.currentTime = 0;
+          flyingHousesVideo.play().catch(() => {});
+        }
+      });
+    }
+
+    // Flying houses → Flying clouds
+    if (flyingHousesVideo && flyingHousesScreen && flyingCloudsScreen) {
+      flyingHousesVideo.addEventListener("ended", () => {
+        flyingHousesScreen.classList.remove("screen--active");
+        flyingHousesScreen.classList.add("screen--hidden");
+        flyingCloudsScreen.classList.remove("screen--hidden");
+        flyingCloudsScreen.classList.add("screen--active");
+
+        if (flyingCloudsVideo) {
+          flyingCloudsVideo.currentTime = 0;
+          flyingCloudsVideo.play().catch(() => {});
         }
       });
     }
