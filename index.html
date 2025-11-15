@@ -33,6 +33,15 @@
       overflow: hidden;
     }
 
+    body, .stage, img, video, canvas {
+      user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      -moz-user-select: none;
+      -webkit-user-drag: none;
+      touch-action: none;
+    }
+
     #app {
       position: fixed;
       inset: 0;
@@ -47,25 +56,10 @@
       position: relative;
       background: #000;
       overflow: hidden;
-      border-radius: 16px;
       max-height: 100%;
       max-width: 100%;
     }
 
-    #fullscreenBtn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      z-index: 5;
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.4);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      backdrop-filter: blur(6px);
-      cursor: pointer;
-    }
 
     #sparkleCanvas {
       position: absolute;
@@ -205,7 +199,6 @@
   <div id="app">
     <div class="stage">
 
-      <button id="fullscreenBtn">⤢ Full Screen</button>
 
       <!-- Sparkle canvas overlay -->
       <canvas id="sparkleCanvas"></canvas>
@@ -607,6 +600,15 @@
         magicCharged = true;
       }
     });
+
+    // Prevent touch scroll / drag while interacting with magic on mobile
+    document.addEventListener("touchmove", (e) => {
+      // When sparkles are enabled we are in the interactive envelope state;
+      // prevent the page from scrolling or dragging.
+      if (sparklesEnabled) {
+        e.preventDefault();
+      }
+    }, { passive: false });
     if (envelopeMagicVideo && envelopeMagicScreen && mickeyOutScreen) {
       envelopeMagicVideo.addEventListener("ended", () => {
         // Envelope magic → Mickey out window
@@ -652,22 +654,6 @@
       });
     }
 
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
-    const stageElement = document.querySelector(".stage");
-
-    if (fullscreenBtn && stageElement) {
-      fullscreenBtn.addEventListener("click", () => {
-        if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => {});
-        } else {
-          if (stageElement.requestFullscreen) {
-            stageElement.requestFullscreen().catch(() => {});
-          } else if (stageElement.webkitRequestFullscreen) {
-            stageElement.webkitRequestFullscreen();
-          }
-        }
-      });
-    }
   </script>
 </body>
 </html>
