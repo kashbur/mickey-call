@@ -222,9 +222,9 @@
       <!-- Intro screen: Mickey talking -->
       <div id="screen-intro" class="screen screen--active">
         <video id="revealVideo"
-               src="mickey-intro.mp4"
+               data-src="mickey-intro.mp4"
                autoplay
-               playsinline
+               playsinline preload="metadata"
                muted>
         </video>
 
@@ -256,8 +256,8 @@
       <div id="screen-mickey-tap" class="screen screen--hidden">
         <video
           id="mickeyTapVideo"
-          src="mickey-tapping.mp4"
-          playsinline
+          data-src="mickey-tapping.mp4"
+          playsinline preload="metadata"
           muted
         ></video>
       </div>
@@ -266,8 +266,8 @@
       <div id="screen-envelope-magic" class="screen screen--hidden">
         <video
           id="envelopeMagicVideo"
-          src="envelope-magic.mp4"
-          playsinline
+          data-src="envelope-magic.mp4"
+          playsinline preload="metadata"
           muted
         ></video>
       </div>
@@ -276,8 +276,8 @@
       <div id="screen-mickey-outwindow" class="screen screen--hidden">
         <video
           id="mickeyOutVideo"
-          src="mickey-outwindow.mp4"
-          playsinline
+          data-src="mickey-outwindow.mp4"
+          playsinline preload="metadata"
           muted
         ></video>
       </div>
@@ -286,8 +286,8 @@
       <div id="screen-flying-houses" class="screen screen--hidden">
         <video
           id="flyingHousesVideo"
-          src="flying-houses.mp4"
-          playsinline
+          data-src="flying-houses.mp4"
+          playsinline preload="metadata"
           muted
         ></video>
       </div>
@@ -296,8 +296,8 @@
       <div id="screen-flying-clouds" class="screen screen--hidden">
         <video
           id="flyingCloudsVideo"
-          src="flying-clouds.mp4"
-          playsinline
+          data-src="flying-clouds.mp4"
+          playsinline preload="metadata"
           muted
         ></video>
       </div>
@@ -307,6 +307,12 @@
 
   <script>
     // Read ?name=, ?line= and ?to=
+    function lazyLoadVideo(id) {
+      const v = document.getElementById(id);
+      if (v && v.dataset.src && !v.src) {
+        v.src = v.dataset.src;
+      }
+    }
     const params = new URLSearchParams(window.location.search);
     const name = params.get("name") || "";
     const line = params.get("line") || "";
@@ -510,6 +516,7 @@
           mickeyTapScreen.classList.remove("screen--hidden");
           mickeyTapScreen.classList.add("screen--active");
 
+          lazyLoadVideo("mickeyTapVideo");
           if (mickeyTapVideo) {
             mickeyTapVideo.currentTime = 0;
             mickeyTapVideo.play().catch(() => {});
@@ -577,6 +584,7 @@
           envelopeMagicScreen.classList.remove("screen--hidden");
           envelopeMagicScreen.classList.add("screen--active");
 
+          lazyLoadVideo("envelopeMagicVideo");
           envelopeMagicVideo.currentTime = 0;
           envelopeMagicVideo.play().catch(() => {});
         }, 200);
@@ -636,6 +644,7 @@
         mickeyOutScreen.classList.remove("screen--hidden");
         mickeyOutScreen.classList.add("screen--active");
 
+        lazyLoadVideo("mickeyOutVideo");
         if (mickeyOutVideo) {
           mickeyOutVideo.currentTime = 0;
           mickeyOutVideo.play().catch(() => {});
@@ -651,6 +660,7 @@
         flyingHousesScreen.classList.remove("screen--hidden");
         flyingHousesScreen.classList.add("screen--active");
 
+        lazyLoadVideo("flyingHousesVideo");
         if (flyingHousesVideo) {
           flyingHousesVideo.currentTime = 0;
           flyingHousesVideo.play().catch(() => {});
@@ -666,6 +676,7 @@
         flyingCloudsScreen.classList.remove("screen--hidden");
         flyingCloudsScreen.classList.add("screen--active");
 
+        lazyLoadVideo("flyingCloudsVideo");
         if (flyingCloudsVideo) {
           flyingCloudsVideo.currentTime = 0;
           flyingCloudsVideo.play().catch(() => {});
