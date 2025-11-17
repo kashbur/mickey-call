@@ -327,6 +327,7 @@
 
     // iOS autoplay helper
     const video = document.getElementById("revealVideo");
+    lazyLoadVideo("revealVideo");
     document.addEventListener("touchstart", () => {
       if (video.paused) video.play().catch(() => {});
     }, { passive: true });
